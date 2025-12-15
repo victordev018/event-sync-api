@@ -52,5 +52,41 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
+
+    @ExceptionHandler(EventFullException.class)
+    public ResponseEntity<StandardError> eventFull(EventFullException e, HttpServletRequest request) {
+        StandardError error = new StandardError(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                "Event Full",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(AlreadySubscribedException.class)
+    public ResponseEntity<StandardError> alreadySubscribed(AlreadySubscribedException e, HttpServletRequest request) {
+        StandardError error = new StandardError(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                "Already Subscribed",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<StandardError> eventNotFound(EventNotFoundException e, HttpServletRequest request) {
+        StandardError error = new StandardError(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Event Not Found",
+                e.getMessage(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }
 

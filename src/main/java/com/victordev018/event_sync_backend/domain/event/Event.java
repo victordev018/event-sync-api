@@ -28,16 +28,18 @@ public class Event {
     private String description;
     private Instant date;
     private String location;
+    private Integer maxAttendees;
 
     @ManyToOne
     @JoinColumn(name = "organizer_id")
     private User organizer;
 
-    public Event(String title, String description, Instant date, String location, User organizer) {
+    public Event(String title, String description, Instant date, String location, Integer maxAttendees, User organizer) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.location = location;
+        this.maxAttendees = maxAttendees;
         this.organizer = organizer;
     }
 }
