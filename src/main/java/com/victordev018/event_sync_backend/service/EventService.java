@@ -41,7 +41,7 @@ public class EventService {
     public List<EventResponseDTO> getAllEvents() {
         return eventRepository.findAll().stream().map(event -> {
             Integer attendees = subscriptionRepository.countByEvent(event);
-            return EventResponseDTO.fromEvent(event, attendees);
+            return EventResponseDTO.fromEvent(event, attendees, false);
         }).toList();
     }
 
@@ -116,11 +116,17 @@ public class EventService {
         return eventRepository.findAll().stream().filter(e -> e.getOrganizer().getId().equals(currentUser.getId())).toList();
     }
 
-    public List<Event> getMySubscriptions() {
+    public List<EventResponseDTO> getMySubscriptions() {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // Reload user to be sure attached to session
         currentUser = userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("User not found"));
-        return subscriptionRepository.findAllEventsByUser(currentUser);
+        
+        List<Subscription> subscriptions = subscriptionRepository.findAllByUser(currentUser);
+
+        return subscriptions.stream().map(sub -> {
+            Event event = sub.getEvent();
+            Integer attendees = subscriptionRepository.countByEvent(event);
+            return EventResponseDTO.fromEvent(event, attendees, sub.getCheckedIn());
+        }).toList();  
     }
 
     public List<com.victordev018.event_sync_backend.dto.subscription.SubscriptionDTO> getSubscriptions(UUID eventId) {

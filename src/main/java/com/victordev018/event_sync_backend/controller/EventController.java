@@ -88,8 +88,8 @@ public class EventController {
 
     @GetMapping("/attending")
     @Operation(summary = "My Subscriptions", description = "Lists events the current user is subscribed to.")
-    public ResponseEntity<List<Event>> getMySubscriptions(){
-        List<Event> events = this.eventService.getMySubscriptions();
+    public ResponseEntity<List<EventResponseDTO>> getMySubscriptions(){
+        List<EventResponseDTO> events = this.eventService.getMySubscriptions();
         return ResponseEntity.ok(events);
     }
 
