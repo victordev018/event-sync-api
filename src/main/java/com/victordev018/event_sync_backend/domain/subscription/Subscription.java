@@ -33,9 +33,22 @@ public class Subscription {
 
     private Instant subscriptionTime;
 
+    private Boolean checkedIn = false;
+
+    private Instant checkInTime;
+
     public Subscription(User user, Event event, Instant subscriptionTime) {
         this.user = user;
         this.event = event;
         this.subscriptionTime = subscriptionTime;
+        this.checkedIn = false;
+    }
+
+    public void setCheckedIn(Boolean checkedIn) {
+        this.checkedIn = checkedIn;
+    }
+
+    public void setCheckInTime(Instant checkInTime) {
+        this.checkInTime = checkInTime;
     }
 }

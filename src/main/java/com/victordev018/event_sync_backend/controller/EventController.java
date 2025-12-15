@@ -92,4 +92,18 @@ public class EventController {
         List<Event> events = this.eventService.getMySubscriptions();
         return ResponseEntity.ok(events);
     }
+
+    @GetMapping("/{id}/subscriptions")
+    @Operation(summary = "List Event Subscriptions", description = "Lists all participants of an event. Organizer only.")
+    public ResponseEntity<List<com.victordev018.event_sync_backend.dto.subscription.SubscriptionDTO>> getEventSubscriptions(@PathVariable UUID id){
+        var subscriptions = this.eventService.getSubscriptions(id);
+        return ResponseEntity.ok(subscriptions);
+    }
+
+    @PostMapping("/{id}/checkin/{userId}")
+    @Operation(summary = "Perform Check-in", description = "Marks a participant as present. Organizer only.")
+    public ResponseEntity<Void> checkIn(@PathVariable UUID id, @PathVariable UUID userId){
+        this.eventService.checkIn(id, userId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -18,4 +18,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, UUID
     List<Event> findAllEventsByUser(@Param("user") User user);
     
     Integer countByEvent(Event event);
+
+    List<Subscription> findByEvent(Event event);
 }

@@ -122,4 +122,39 @@ public class EventService {
         currentUser = userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("User not found"));
         return subscriptionRepository.findAllEventsByUser(currentUser);
     }
+
+    public List<com.victordev018.event_sync_backend.dto.subscription.SubscriptionDTO> getSubscriptions(UUID eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found"));
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!event.getOrganizer().getId().equals(currentUser.getId()) && currentUser.getRole() != UserRole.ADMIN) {
+            throw new CustomAuthenticationException("You don't have permission to view subscriptions for this event");
+        }
+
+        return subscriptionRepository.findByEvent(event).stream()
+                .map(com.victordev018.event_sync_backend.dto.subscription.SubscriptionDTO::fromSubscription)
+                .toList();
+    }
+
+    public void checkIn(UUID eventId, UUID userId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException("Event not found"));
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!event.getOrganizer().getId().equals(currentUser.getId()) && currentUser.getRole() != UserRole.ADMIN) {
+            throw new CustomAuthenticationException("You don't have permission to perform check-in for this event");
+        }
+
+        User participant = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        Subscription subscription = subscriptionRepository.findByEventAndUser(event, participant)
+                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+
+        // Using setter if available, else need to add setter in Entity or use reflection/constructor
+        // Assuming Lombok @Data or similar, but Subscription has @Getter only. Need to update Subscription to have Setters or method
+        // Wait, I only saw @Getter in Subscription.java. I need to add setCheckedIn.
+        // I will add a method markAsCheckedIn() to Subscription.java in a moment.
+        // For now, I'll rely on a method I'll add.
+        subscription.setCheckedIn(true);
+        subscription.setCheckInTime(java.time.Instant.now());
+        subscriptionRepository.save(subscription);
+    }
 }
